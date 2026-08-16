@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Rashidiya Palace Restaurant — Design System
+   --------------------------------------------------------------------------
+   Direction: warm ink ground, ivory type, muted gold used only as a hairline
+   accent. The single structural motif is the ARCH (palace / mihrab). House
+   rule: the only curves on this site are arches — every card, button, input
+   and image is square-cornered unless it is deliberately arched.
+   ========================================================================== */
+
+@theme {
+  /* --- Color -------------------------------------------------------------
+     Warm-biased neutrals (never blue-black). Gold is an accent, not a ground.
+     Contrast on --color-ink: ivory 16.4:1 · sand 11.3:1 · gold 6.3:1
+     ---------------------------------------------------------------------- */
+  --color-ink: #12100e;
+  --color-ink-raised: #1c1815;
+  --color-ink-soft: #262019;
+
+  --color-ivory: #f4efe6;
+  --color-ivory-dim: #e6dccb;
+  --color-sand: #d9cbb3;
+  --color-sand-deep: #a9977c;
+
+  --color-gold: #b08d4f;
+  --color-gold-bright: #c9a869;
+  --color-clay: #4a3728;
+  --color-clay-deep: #33251a;
+
+  /* --- Type --------------------------------------------------------------
+     Marcellus: Roman inscriptional display, single weight — hierarchy comes
+     from size and tracking, not weight. Karla: warm grotesque for body/UI.
+     ---------------------------------------------------------------------- */
+  --font-display: var(--font-marcellus), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+
+  /* --- Motion ------------------------------------------------------------ */
+  --ease-arch: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* --- Layout ------------------------------------------------------------ */
+  --spacing-gutter: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    /* House rule: no incidental rounding anywhere. Arches are opt-in. */
+    border-radius: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so the fixed header never covers a heading. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Guards against any single wide child creating a horizontal scrollbar. */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, on-brand focus ring for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-bright);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  /* Firefox/Safari image alt-text styling when a source fails to load. */
+  img {
+    color: var(--color-sand-deep);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The arch — the site's one signature form.
+
+   A box with a semicircular (or shallow) dome on top. Percentages are used on
+   both axes so the dome keeps its proportion as the box scales.
+   -------------------------------------------------------------------------- */
+
+@utility arch {
+  border-radius: 50% 50% 0 0 / 32% 32% 0 0;
+}
+
+@utility arch-shallow {
+  border-radius: 50% 50% 0 0 / 14% 14% 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   Editorial primitives
+   -------------------------------------------------------------------------- */
+
+/* Small-caps utility label: eyebrows, category tags, table headers. */
+@utility label-xs {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Fluid display sizes — no layout jumps between breakpoints. */
+@utility text-display-xl {
+  font-size: clamp(2.75rem, 1.4rem + 6vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+@utility text-display-lg {
+  font-size: clamp(2.25rem, 1.3rem + 4vw, 4.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+
+@utility text-display-md {
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3rem);
+  line-height: 1.1;
+}
+
+/* Hairline rule in gold — the site's only decorative line. */
+@utility rule-gold {
+  height: 1px;
+  background-color: color-mix(in srgb, var(--color-gold) 55%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Motion — every animation below is disabled by the reduced-motion block.
+   -------------------------------------------------------------------------- */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes veil-lift {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Applied by <ScrollReveal>.
+   The hidden state is scoped to `.js-reveal`, a class ScrollReveal puts on
+   <html> once it has mounted. Content is therefore only ever hidden when
+   JavaScript is definitely running and able to reveal it again — if scripts
+   are disabled or fail to boot, everything simply renders visible. */
+.js-reveal .reveal {
+  opacity: 0;
+}
+
+.reveal[data-visible="true"] {
+  animation: reveal-up 0.75s var(--ease-arch) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+.veil[data-visible="true"] {
+  animation: veil-lift 1.1s var(--ease-arch) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* Show with no animation at all. Used when there is nobody to see the motion —
+   a hidden/background document, where CSS animations are frozen and a
+   fill-mode animation would otherwise leave the content stuck at opacity 0. */
+.reveal[data-instant="true"],
+.veil[data-instant="true"] {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Content must be fully legible with motion off — never left at opacity 0. */
+  .reveal,
+  .veil {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+/* Screen-reader-only, revealed on focus (used by the skip link). */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  &:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+}
+
+/* Reserve space for the fixed mobile action bar + device safe area. */
+@utility pb-action-bar {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
